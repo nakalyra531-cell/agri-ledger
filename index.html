@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アグリ・レジャー — Agri-Ledger</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;background:#F5F3EE;color:#1a1a1a;min-height:100vh;}
+.container{max-width:600px;margin:0 auto;padding:1rem;}
+.screen{display:none;}.screen.active{display:block;}
+
+/* ── カラー変数 ── */
+:root{
+  --g1:#27500A;--g2:#3B6D11;--g3:#639922;--g4:#EAF3DE;--g5:#C0DD97;
+  --a1:#633806;--a2:#BA7517;--a3:#FAEEDA;--a4:#FAC775;
+  --c1:#993C1D;--c2:#FAECE7;
+  --neu:#F1EFE8;--border:#E0DDD6;--bg:#fff;--bg2:#F8F6F1;
+  --text:#1a1a1a;--text2:#6b6966;
+}
+
+/* ── SETUP ── */
+.s-title{font-size:26px;font-weight:600;color:var(--g1);text-align:center;padding:1.5rem 0 0.25rem;}
+.s-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1.25rem;}
+.s-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:0.75rem;}
+.s-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;letter-spacing:0.3px;}
+.cnt-row{display:flex;gap:8px;}
+.cnt-btn{flex:1;padding:10px 0;border:1.5px solid var(--border);border-radius:10px;background:transparent;cursor:pointer;font-size:18px;font-weight:600;color:var(--text2);transition:all .15s;}
+.cnt-btn.on{border-color:var(--g2);background:var(--g4);color:var(--g1);}
+.n-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.n-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+.n-input{flex:1;padding:7px 10px;font-size:14px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);outline:none;}
+.n-input:focus{border-color:var(--g2);}
+.go-btn{width:100%;padding:13px;background:var(--g2);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:background .15s;}
+.go-btn:hover{background:var(--g1);}
+.rule-box{background:var(--g4);border:1px solid var(--g5);border-radius:14px;padding:1rem 1.25rem;margin-bottom:0.75rem;}
+.rule-box h3{font-size:13px;font-weight:600;color:var(--g1);margin-bottom:0.5rem;}
+.rule-item{font-size:12px;color:var(--g1);margin-bottom:4px;padding-left:1em;text-indent:-1em;}
+
+/* ── PASS ── */
+.pass-box{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:3rem 1.5rem;text-align:center;margin:0.5rem 0;}
+.pass-nm{font-size:22px;font-weight:600;margin-bottom:6px;}
+.pass-sub{font-size:13px;color:var(--text2);margin-bottom:2rem;line-height:1.6;}
+.pass-btn{padding:13px 36px;background:var(--g2);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;}
+
+/* ── GAME ── */
+.g-header{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0 0.6rem;}
+.g-turn-lbl{font-size:11px;color:var(--text2);}
+.g-turnnum{font-size:20px;font-weight:600;color:var(--g1);}
+.prog{height:5px;background:var(--neu);border-radius:3px;margin-bottom:0.75rem;overflow:hidden;}
+.prog-fill{height:100%;background:var(--g2);border-radius:3px;transition:width .4s;}
+.sec{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.85rem 1rem;margin-bottom:0.65rem;}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:0.4px;margin-bottom:0.55rem;text-transform:uppercase;}
+.mkt-row{display:flex;gap:8px;}
+.mkt-card{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:0.7rem 0.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.mkt-icon{font-size:24px;line-height:1;}
+.mkt-name{font-size:11px;font-weight:600;color:var(--text2);}
+.sp-badge{font-size:9px;padding:2px 7px;border-radius:10px;background:var(--c2);color:var(--c1);font-weight:600;}
+.mkt-pts{font-size:10px;color:var(--text2);}
+.farms{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin-bottom:0.65rem;}
+.farm{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.75rem;}
+.farm-hd{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.farm-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;}
+.farm-nm{font-size:13px;font-weight:600;}
+.farm-score-lbl{font-size:11px;color:var(--text2);margin-bottom:4px;}
+.farm-crops{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;}
+.ctag{font-size:11px;padding:2px 6px;border-radius:5px;background:var(--g4);color:var(--g1);}
+.ctag.blind{background:var(--neu);color:var(--text2);font-style:italic;}
+.ctag.sp{background:var(--c2);color:var(--c1);}
+.empty-lbl{font-size:11px;color:var(--text2);font-style:italic;}
+.bid-start-btn{width:100%;padding:11px;background:var(--g2);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;}
+.bid-start-btn:hover{background:var(--g1);}
+
+/* ── BID ── */
+.bid-box{background:var(--a3);border:1px solid var(--a4);border-radius:14px;padding:1rem;margin-bottom:0.65rem;}
+.bid-who{font-size:15px;font-weight:600;margin-bottom:3px;}
+.bid-sub{font-size:13px;color:var(--a1);margin-bottom:0.75rem;}
+.blind-reveal{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.9rem;margin-bottom:0.75rem;}
+.blind-lbl{font-size:11px;color:var(--text2);margin-bottom:5px;}
+.blind-cards{display:flex;gap:6px;flex-wrap:wrap;}
+.blind-tag{font-size:12px;padding:3px 9px;border-radius:5px;background:var(--g4);color:var(--g1);font-weight:600;}
+.hand-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem;}
+.hcard{width:42px;height:54px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);cursor:pointer;font-size:18px;font-weight:600;color:var(--g1);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.hcard:hover{background:var(--g4);border-color:var(--g2);transform:translateY(-2px);}
+.hcard.used{opacity:.25;pointer-events:none;}
+.hcard.sel{background:var(--g2);color:#fff;border-color:var(--g1);transform:translateY(-3px);}
+.conf-btn{padding:9px 22px;background:var(--g2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+.conf-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── REVEAL ── */
+.bids-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:0.5rem;}
+.bid-res{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;background:var(--bg2);font-size:13px;}
+.bid-res.win{background:var(--g4);border:1.5px solid var(--g5);}
+.bid-num{font-size:19px;font-weight:600;color:var(--g1);}
+.win-tag{font-size:11px;color:var(--g2);font-weight:600;}
+.nxt-btn{width:100%;padding:11px;background:var(--g2);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:0.75rem;}
+.nxt-btn:hover{background:var(--g1);}
+
+/* ── SPECIAL ── */
+.sp-modal-bg{background:rgba(0,0,0,0.4);border-radius:16px;padding:2rem 1rem;display:flex;align-items:center;justify-content:center;min-height:280px;margin-bottom:0.65rem;}
+.sp-modal{background:var(--bg);border-radius:16px;padding:1.5rem;border:1px solid var(--border);max-width:380px;width:100%;}
+.sp-title{font-size:16px;font-weight:600;margin-bottom:5px;}
+.sp-desc{font-size:13px;color:var(--text2);margin-bottom:0.9rem;line-height:1.5;}
+.sp-targets{display:flex;flex-direction:column;gap:6px;}
+.tgt-btn{padding:9px 13px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);cursor:pointer;font-size:13px;text-align:left;color:var(--text);}
+.tgt-btn:hover{background:var(--g4);border-color:var(--g2);}
+.skip-btn{margin-top:9px;width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text2);cursor:pointer;font-size:13px;}
+
+/* ── RESULT ── */
+.res-wrap{padding:0.5rem 0;}
+.res-title{text-align:center;font-size:24px;font-weight:600;color:var(--g1);margin-bottom:1rem;}
+.res-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
+.res-row{display:flex;align-items:center;gap:10px;padding:0.85rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:14px;}
+.res-rank{font-size:22px;min-width:30px;}
+.res-ap{font-size:22px;font-weight:600;color:var(--g1);}
+.res-aplbl{font-size:10px;color:var(--text2);}
+.res-crops{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.restart-btn{width:100%;padding:13px;background:var(--g2);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;}
+.restart-btn:hover{background:var(--g1);}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- SETUP -->
+<div id="ss" class="screen active">
+  <div class="s-title">🌾 アグリ・レジャー</div>
+  <div class="s-sub">Agri-Ledger — 農業国際貿易カードゲーム</div>
+  <div class="rule-box">
+    <h3>📖 ゲームルール（かんたん版）</h3>
+    <div class="rule-item">・全10ターン制。最終APが最も高いプレイヤーの勝利</div>
+    <div class="rule-item">・各ターン、市場に2枚の作物カードが公開される</div>
+    <div class="rule-item">・全員が秘密裏に投資カード（1〜10）を1枚選んで提示</div>
+    <div class="rule-item">・最高数字を出したプレイヤーが2枚を総取り。使った札は戻らない</div>
+    <div class="rule-item">・初期配布の2枚はブラインド（入札時のみ確認可）</div>
+    <div class="rule-item">・得点はゲーム終了後に一括公開</div>
+  </div>
+  <div class="s-card">
+    <div class="s-label">プレイヤー人数</div>
+    <div class="cnt-row" id="cnt-grid"></div>
+  </div>
+  <div class="s-card">
+    <div class="s-label">プレイヤー名</div>
+    <div id="name-inputs"></div>
+  </div>
+  <button class="go-btn" onclick="startGame()">ゲーム開始 →</button>
+</div>
+
+<!-- PASS -->
+<div id="sp" class="screen">
+  <div class="pass-box">
+    <div class="pass-nm" id="pass-nm"></div>
+    <div class="pass-sub">あなたの番です。準備ができたらタップしてください。<br>（他のプレイヤーは画面を見ないこと）</div>
+    <button class="pass-btn" onclick="showBidScreen()">👁 準備OK</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="sg" class="screen">
+  <div class="g-header">
+    <div><div class="g-turn-lbl">ターン</div><div class="g-turnnum" id="g-turn"></div></div>
+    <div style="text-align:right"><div class="g-turn-lbl">次の先手</div><div style="font-size:14px;font-weight:600;color:var(--g2)" id="g-first"></div></div>
+  </div>
+  <div class="prog"><div class="prog-fill" id="prog-fill" style="width:10%"></div></div>
+  <div class="sec"><div class="sec-lbl">今ターンの市場</div><div class="mkt-row" id="mkt-main"></div></div>
+  <div class="farms" id="farms-main"></div>
+  <button class="bid-start-btn" onclick="startBidding()">競りを開始する ⚖️</button>
+</div>
+
+<!-- BID -->
+<div id="sb" class="screen">
+  <div class="g-header">
+    <div><div class="g-turn-lbl">ターン</div><div class="g-turnnum" id="b-turn"></div></div>
+  </div>
+  <div class="sec"><div class="sec-lbl">今ターンの市場</div><div class="mkt-row" id="mkt-bid"></div></div>
+  <div class="bid-box">
+    <div class="bid-who" id="bid-who"></div>
+    <div class="bid-sub">投資カードを1枚選んで提示してください</div>
+    <div class="blind-reveal" id="blind-reveal-area" style="display:none">
+      <div class="blind-lbl">あなたの初期カード（入札確定後は再び非公開になります）</div>
+      <div class="blind-cards" id="blind-cards-display"></div>
+    </div>
+    <div class="hand-row" id="hand-display"></div>
+    <button class="conf-btn" id="conf-btn" onclick="confirmBid()" disabled>この札を出す</button>
+  </div>
+</div>
+
+<!-- REVEAL -->
+<div id="sr" class="screen">
+  <div class="sec"><div class="sec-lbl">今ターンの市場</div><div class="mkt-row" id="mkt-rev"></div></div>
+  <div class="sec">
+    <div class="sec-lbl">競り結果</div>
+    <div class="bids-list" id="bids-rev"></div>
+    <div id="rev-desc" style="margin-top:0.75rem;font-size:14px;color:var(--text2);"></div>
+    <button class="nxt-btn" onclick="resolveWinner()">結果を確定する →</button>
+  </div>
+</div>
+
+<!-- SPECIAL -->
+<div id="ssp" class="screen">
+  <div class="sec"><div class="sec-lbl">特殊アクション発動</div><div class="mkt-row" id="mkt-sp"></div></div>
+  <div id="sp-area"></div>
+</div>
+
+<!-- RESULT -->
+<div id="sres" class="screen">
+  <div class="res-wrap">
+    <div class="res-title">🏆 ゲーム終了！最終結果</div>
+    <div class="res-list" id="res-list"></div>
+    <button class="restart-btn" onclick="restartGame()">もう一度遊ぶ</button>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+const CLR=[['#27500A','#EAF3DE'],['#633806','#FAEEDA'],['#0F6E56','#E1F5EE'],['#993C1D','#FAECE7'],['#533AB7','#EEEDFE']];
+const NATIONS=['日本','アメリカ','ブラジル','EU','中国'];
+
+const CROPS=[
+  {id:'grain',  name:'大衆穀物',  icon:'🌾', pts:[3,4,6],   lbl:'+3/+4/+6',   cnt:5},
+  {id:'cash',   name:'商品作物',  icon:'☕', pts:[5,2,-15], lbl:'+5/+2/−15',  cnt:5},
+  {id:'brand',  name:'希少作物',  icon:'🍇', pts:[0,0,15],  lbl:'0/0/+15',    cnt:5},
+  {id:'dairy',  name:'畜産・酪農',icon:'🐄', pts:[-2,-5,8], lbl:'−2/−5/+8',  cnt:5},
+  {id:'orchard',name:'果樹園・果物',icon:'🍎',pts:[-3,6,-3], lbl:'−3/+6/−3',  cnt:5},
+];
+const SPECIALS=[
+  {id:'buyout', name:'農地買収', icon:'🤝', cnt:2},
+  {id:'isolate',name:'市場隔離', icon:'🚢', cnt:2},
+  {id:'dump',   name:'ダンピング',icon:'🚜', cnt:2},
+];
+
+let G={};
+
+function meta(id){return CROPS.find(c=>c.id===id)||SPECIALS.find(s=>s.id===id);}
+
+function calcScore(field){
+  let tot=0;
+  const cnt={};CROPS.forEach(c=>cnt[c.id]=0);
+  field.forEach(c=>{if(cnt.hasOwnProperty(c.typeId))cnt[c.typeId]++;});
+  CROPS.forEach(c=>{const n=cnt[c.id];if(!n)return;tot+=c.pts[n>=3?2:n-1];});
+  return tot;
+}
+
+function shuffle(d){for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}}
+
+function makeCropDeck(){
+  const d=[];
+  CROPS.forEach(c=>{for(let i=0;i<c.cnt;i++)d.push({typeId:c.id,id:c.id+'_i'+i,isSpecial:false,blind:false});});
+  shuffle(d);return d;
+}
+function makeFullDeck(){
+  const d=[];
+  CROPS.forEach(c=>{for(let i=0;i<c.cnt;i++)d.push({typeId:c.id,id:c.id+'_f'+i,isSpecial:false,blind:false});});
+  SPECIALS.forEach(s=>{for(let i=0;i<s.cnt;i++)d.push({typeId:s.id,id:s.id+'_'+i,isSpecial:true,blind:false});});
+  shuffle(d);return d;
+}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function renderMkt(cards,cid){
+  const el=document.getElementById(cid);el.innerHTML='';
+  cards.forEach(c=>{
+    const m=meta(c.typeId);
+    const div=document.createElement('div');div.className='mkt-card';
+    div.innerHTML=c.isSpecial
+      ?`<div class="mkt-icon">${m.icon}</div><div class="mkt-name">${m.name}</div><div class="sp-badge">特殊</div>`
+      :`<div class="mkt-icon">${m.icon}</div><div class="mkt-name">${m.name}</div><div class="mkt-pts">${m.lbl}</div>`;
+    el.appendChild(div);
+  });
+}
+
+function renderFarms(){
+  const el=document.getElementById('farms-main');el.innerHTML='';
+  G.players.forEach((p,i)=>{
+    const div=document.createElement('div');div.className='farm';
+    const crops=p.field.length
+      ?p.field.map(c=>{
+          const m=meta(c.typeId);
+          return c.blind?`<span class="ctag blind">？</span>`:`<span class="ctag${c.isSpecial?' sp':''}">${m.icon}${m.name}</span>`;
+        }).join('')
+      :'<span class="empty-lbl">作物なし</span>';
+    div.innerHTML=`<div class="farm-hd">
+      <div class="farm-av" style="background:${CLR[i][1]};color:${CLR[i][0]}">${p.name[0]}</div>
+      <div class="farm-nm" style="color:${CLR[i][0]}">${p.name}</div>
+    </div>
+    <div class="farm-score-lbl">得点：ゲーム終了後に公開</div>
+    <div class="farm-crops">${crops}</div>`;
+    el.appendChild(div);
+  });
+}
+
+/* SETUP */
+function buildCntGrid(){
+  const el=document.getElementById('cnt-grid');el.innerHTML='';
+  [2,3,4,5].forEach(n=>{
+    const b=document.createElement('button');
+    b.className='cnt-btn'+(n===(G.cnt||2)?' on':'');
+    b.textContent=n+'人';b.onclick=()=>selectCnt(n);el.appendChild(b);
+  });
+}
+function selectCnt(n){
+  G.cnt=n;
+  document.querySelectorAll('.cnt-btn').forEach(b=>b.classList.toggle('on',b.textContent===n+'人'));
+  buildNames(n);
+}
+function buildNames(n){
+  const el=document.getElementById('name-inputs');el.innerHTML='';
+  for(let i=0;i<n;i++){
+    const row=document.createElement('div');row.className='n-row';
+    row.innerHTML=`<div class="n-avatar" style="background:${CLR[i][1]};color:${CLR[i][0]}">${i+1}</div>
+      <input class="n-input" id="pn-${i}" type="text" placeholder="${NATIONS[i]}の農政顧問" value="${NATIONS[i]}" maxlength="10">`;
+    el.appendChild(row);
+  }
+}
+
+function startGame(){
+  const n=G.cnt||2;
+  G.players=[];
+  for(let i=0;i<n;i++){
+    const v=document.getElementById('pn-'+i);
+    G.players.push({name:v?v.value||`P${i+1}`:`P${i+1}`,field:[],hand:[1,2,3,4,5,6,7,8,9,10],used:[],ci:i});
+  }
+  const initDeck=makeCropDeck();
+  G.players.forEach(p=>{
+    for(let i=0;i<2;i++){if(initDeck.length){const c=initDeck.pop();c.blind=true;p.field.push(c);}}
+  });
+  G.deck=makeFullDeck();G.turn=1;G.max=10;G.first=0;
+  show('sg');renderTurn();
+}
+
+function renderTurn(){
+  document.getElementById('g-turn').textContent=G.turn+' / '+G.max;
+  document.getElementById('prog-fill').style.width=(G.turn/G.max*100)+'%';
+  document.getElementById('g-first').textContent=G.players[G.first].name;
+  G.mkt=[];
+  for(let i=0;i<2;i++){if(G.deck.length)G.mkt.push(G.deck.pop());}
+  renderMkt(G.mkt,'mkt-main');renderFarms();show('sg');
+}
+
+/* BIDDING */
+let selBid=null;
+function startBidding(){
+  G.order=[];
+  for(let i=0;i<G.players.length;i++)G.order.push((G.first+i)%G.players.length);
+  G.bidIdx=0;G.bids={};showPass();
+}
+function showPass(){
+  const pidx=G.order[G.bidIdx];
+  document.getElementById('pass-nm').textContent=G.players[pidx].name+' の番';show('sp');
+}
+function showBidScreen(){
+  const pidx=G.order[G.bidIdx];const p=G.players[pidx];
+  document.getElementById('b-turn').textContent=G.turn+' / '+G.max;
+  document.getElementById('bid-who').textContent=p.name+' — 手札から1枚選択';
+  renderMkt(G.mkt,'mkt-bid');
+  const blindCards=p.field.filter(c=>c.blind);
+  const bra=document.getElementById('blind-reveal-area');
+  if(blindCards.length>0){
+    bra.style.display='block';
+    document.getElementById('blind-cards-display').innerHTML=
+      blindCards.map(c=>{const m=meta(c.typeId);return`<span class="blind-tag">${m.icon} ${m.name}</span>`;}).join('');
+  }else{bra.style.display='none';}
+  const hand=document.getElementById('hand-display');
+  hand.innerHTML='';selBid=null;document.getElementById('conf-btn').disabled=true;
+  p.hand.forEach(v=>{
+    const d=document.createElement('div');
+    d.className='hcard'+(p.used.includes(v)?' used':'');
+    d.textContent=v;
+    d.onclick=()=>{
+      if(p.used.includes(v))return;
+      document.querySelectorAll('.hcard').forEach(c=>c.classList.remove('sel'));
+      d.classList.add('sel');selBid=v;document.getElementById('conf-btn').disabled=false;
+    };
+    hand.appendChild(d);
+  });
+  show('sb');
+}
+function confirmBid(){
+  if(selBid===null)return;
+  const pidx=G.order[G.bidIdx];
+  G.bids[pidx]=selBid;G.players[pidx].used.push(selBid);G.bidIdx++;
+  if(G.bidIdx<G.order.length){showPass();}else{showReveal();}
+}
+
+/* REVEAL */
+function showReveal(){
+  renderMkt(G.mkt,'mkt-rev');
+  const el=document.getElementById('bids-rev');el.innerHTML='';
+  let winner=-1,maxB=-1;
+  G.order.forEach(pidx=>{if(G.bids[pidx]>maxB){maxB=G.bids[pidx];winner=pidx;}});
+  G.order.forEach(pidx=>{
+    const p=G.players[pidx];const isW=pidx===winner;
+    const d=document.createElement('div');d.className='bid-res'+(isW?' win':'');
+    d.innerHTML=`<div style="width:22px;height:22px;border-radius:50%;background:${CLR[p.ci][1]};color:${CLR[p.ci][0]};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">${p.name[0]}</div>
+      <span style="font-size:13px;color:#6b6966">${p.name}</span>
+      <span class="bid-num">${G.bids[pidx]}</span>
+      ${isW?'<span class="win-tag">🏅 勝者</span>':''}`;
+    el.appendChild(d);
+  });
+  G.revWin=winner;
+  document.getElementById('rev-desc').textContent=G.players[winner].name+'が最高入札「'+maxB+'」で市場の作物を獲得します！';
+  show('sr');
+}
+function resolveWinner(){
+  const w=G.revWin;
+  const normals=G.mkt.filter(c=>!c.isSpecial);
+  const specials=G.mkt.filter(c=>c.isSpecial);
+  normals.forEach(c=>{c.blind=false;G.players[w].field.push(c);});
+  G.first=w;
+  if(specials.length>0){G.pendSp=specials;G.spWin=w;G.spIdx=0;nextSpecial();}
+  else{afterResolve();}
+}
+
+/* SPECIALS */
+function nextSpecial(){
+  if(G.spIdx>=G.pendSp.length){afterResolve();return;}
+  const card=G.pendSp[G.spIdx];const w=G.spWin;
+  const area=document.getElementById('sp-area');
+  renderMkt(G.mkt,'mkt-sp');
+  if(card.typeId==='buyout'){
+    const tgts=[];
+    G.players.forEach((p,i)=>{if(i!==w)p.field.forEach(c=>tgts.push({pi:i,card:c}));});
+    if(!tgts.length){G.spIdx++;nextSpecial();return;}
+    let h=`<div class="sp-modal-bg"><div class="sp-modal">
+      <div class="sp-title">🤝 農地買収</div>
+      <div class="sp-desc">${G.players[w].name} — 相手の作物を1枚選んで奪ってください</div>
+      <div class="sp-targets">`;
+    tgts.forEach(t=>{
+      const m=meta(t.card.typeId);
+      const lbl=t.card.blind?'？（非公開）':m.icon+m.name;
+      h+=`<button class="tgt-btn" onclick="doBuyout(${t.pi},'${t.card.id}')">${G.players[t.pi].name} の ${lbl}</button>`;
+    });
+    h+=`</div><button class="skip-btn" onclick="skipSp()">スキップ</button></div></div>`;
+    area.innerHTML=h;show('ssp');
+  }else if(card.typeId==='isolate'){
+    const tgts=[];
+    G.players.forEach((p,i)=>p.field.forEach(c=>tgts.push({pi:i,card:c})));
+    if(!tgts.length){G.spIdx++;nextSpecial();return;}
+    let h=`<div class="sp-modal-bg"><div class="sp-modal">
+      <div class="sp-title">🚢 市場隔離</div>
+      <div class="sp-desc">${G.players[w].name} — ゲームから廃棄する作物を1枚選んでください</div>
+      <div class="sp-targets">`;
+    tgts.forEach(t=>{
+      const m=meta(t.card.typeId);
+      const lbl=t.card.blind?'？（非公開）':m.icon+m.name;
+      h+=`<button class="tgt-btn" onclick="doIsolate(${t.pi},'${t.card.id}')">${G.players[t.pi].name} の ${lbl}</button>`;
+    });
+    h+=`</div><button class="skip-btn" onclick="skipSp()">スキップ</button></div></div>`;
+    area.innerHTML=h;show('ssp');
+  }else if(card.typeId==='dump'){
+    const own=G.players[w].field.filter(c=>!c.isSpecial);
+    if(!own.length||G.players.length<2){G.spIdx++;nextSpecial();return;}
+    let h=`<div class="sp-modal-bg"><div class="sp-modal">
+      <div class="sp-title">🚜 ダンピング</div>
+      <div class="sp-desc">${G.players[w].name} — 自分の作物を1枚選んで相手に押し付けます</div>
+      <div class="sp-targets">`;
+    own.forEach(c=>{
+      const m=meta(c.typeId);
+      h+=`<button class="tgt-btn" onclick="doDumpPick('${c.id}')">${m.icon}${m.name}</button>`;
+    });
+    h+=`</div><button class="skip-btn" onclick="skipSp()">スキップ</button></div></div>`;
+    area.innerHTML=h;show('ssp');
+  }
+}
+function doBuyout(fromPi,cardId){
+  const w=G.spWin;const f=G.players[fromPi].field;
+  const ci=f.findIndex(c=>c.id===cardId);
+  if(ci!==-1){const s=f.splice(ci,1)[0];s.blind=false;G.players[w].field.push(s);}
+  G.spIdx++;nextSpecial();
+}
+function doIsolate(fromPi,cardId){
+  const f=G.players[fromPi].field;
+  const ci=f.findIndex(c=>c.id===cardId);
+  if(ci!==-1)f.splice(ci,1);G.spIdx++;nextSpecial();
+}
+function doDumpPick(cardId){
+  G.dumpCid=cardId;const w=G.spWin;
+  const c=G.players[w].field.find(x=>x.id===cardId);const m=meta(c.typeId);
+  const area=document.getElementById('sp-area');
+  let h=`<div class="sp-modal-bg"><div class="sp-modal">
+    <div class="sp-title">🚜 ダンピング — 送り先を選択</div>
+    <div class="sp-desc">${m.icon}${m.name} を誰に押し付けますか？</div>
+    <div class="sp-targets">`;
+  G.players.forEach((p,i)=>{if(i===w)return;h+=`<button class="tgt-btn" onclick="doDump(${i})">${p.name}</button>`;});
+  h+=`</div><button class="skip-btn" onclick="skipSp()">スキップ</button></div></div>`;
+  area.innerHTML=h;
+}
+function doDump(toPi){
+  const w=G.spWin;const f=G.players[w].field;
+  const ci=f.findIndex(c=>c.id===G.dumpCid);
+  if(ci!==-1){const s=f.splice(ci,1)[0];G.players[toPi].field.push(s);}
+  G.spIdx++;nextSpecial();
+}
+function skipSp(){G.spIdx++;nextSpecial();}
+
+function afterResolve(){
+  if(G.turn>=G.max){showResult();}else{G.turn++;renderTurn();}
+}
+
+/* RESULT */
+function showResult(){
+  const ranked=G.players.map((p,i)=>({p,score:calcScore(p.field),i})).sort((a,b)=>b.score-a.score);
+  const el=document.getElementById('res-list');el.innerHTML='';
+  const medals=['🥇','🥈','🥉'];
+  ranked.forEach((r,rank)=>{
+    const d=document.createElement('div');d.className='res-row';
+    const crops=r.p.field.map(c=>{const m=meta(c.typeId);return`<span class="ctag${c.isSpecial?' sp':''}">${m.icon}${m.name}</span>`;}).join('');
+    d.innerHTML=`<div class="res-rank">${medals[rank]||rank+1}</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:600">${r.p.name}</div>
+        <div class="res-crops">${crops}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="res-ap">${r.score}</div>
+        <div class="res-aplbl">AP</div>
+      </div>`;
+    el.appendChild(d);
+  });
+  show('sres');
+}
+function restartGame(){G={};show('ss');buildCntGrid();buildNames(2);}
+
+G.cnt=2;buildCntGrid();buildNames(2);
+</script>
+</body>
+</html>
