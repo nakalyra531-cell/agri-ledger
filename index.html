@@ -77,6 +77,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .card-face { transform: rotateY(180deg); } /* オモテ面 */
 .card-back { } /* ウラ面 */
 
+/* ── 使用済み投資カードの表示用 ── */
+.used-bids-wrap { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-bottom: 5px; }
+.used-bid-lbl { font-size: 10px; color: var(--text2); margin-right: 4px; }
+.used-bid-tag { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 20px; font-size: 11px; font-weight: 700; background: var(--neu); color: var(--text2); border: 1px solid var(--border); border-radius: 4px; }
+
 .farms{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin-bottom:0.65rem;}
 .farm{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.75rem;}
 .farm-hd{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
@@ -232,7 +237,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   </div>
 </div>
 
-</div><script>
+</div>
+
+<script>
 const CLR=[['#27500A','#EAF3DE'],['#633806','#FAEEDA'],['#0F6E56','#E1F5EE'],['#993C1D','#FAECE7'],['#533AB7','#EEEDFE']];
 const NATIONS=['日本','アメリカ','ブラジル','EU','中国'];
 
@@ -314,16 +321,30 @@ function renderFarms(){
   const el=document.getElementById('farms-main');el.innerHTML='';
   G.players.forEach((p,i)=>{
     const div=document.createElement('div');div.className='farm';
+    
+    // 作物の表示処理
     const crops=p.field.length
       ?p.field.map(c=>{
           const m=meta(c.typeId);
           return c.blind?`<span class="ctag blind">？</span>`:`<span class="ctag${c.isSpecial?' sp':''}">${m.icon}${m.name}</span>`;
         }).join('')
       :'<span class="empty-lbl">作物なし</span>';
+
+    // 使用済みの投資カード（数字）を小さなタグにして並べる処理
+    const usedCards = p.used.length
+      ? p.used.map(num => `<span class="used-bid-tag">${num}</span>`).join('')
+      : '<span class="empty-lbl" style="font-size:10px;">なし</span>';
+
     div.innerHTML=`<div class="farm-hd">
       <div class="farm-av" style="background:${CLR[i][1]};color:${CLR[i][0]}">${p.name[0]}</div>
       <div class="farm-nm" style="color:${CLR[i][0]}">${p.name}</div>
     </div>
+    
+    <div class="used-bids-wrap">
+      <span class="used-bid-lbl">使用済みの投資札:</span>
+      ${usedCards}
+    </div>
+    
     <div class="farm-score-lbl">得点：ゲーム終了後に公開</div>
     <div class="farm-crops">${crops}</div>`;
     el.appendChild(div);
@@ -409,7 +430,6 @@ function showBidScreen(){
   document.getElementById('bid-who').textContent=p.name+' — 手札から1枚選択';
   renderMkt(G.mkt,'mkt-bid');
   
-  // ── 変更箇所：初期カードだけでなく、所有している全カードを表示する ──
   const bra=document.getElementById('blind-reveal-area');
   if(p.field.length>0){
     bra.style.display='block';
