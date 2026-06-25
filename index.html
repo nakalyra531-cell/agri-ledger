@@ -78,6 +78,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .card-back { } /* ウラ面 */
 
 /* ── 使用済み投資カードの表示用 ── */
+.used-bids-wrap { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-bottom: 5px; }
+.used-bid-lbl { font-size: 10px; color: var(--text2); margin-right: 4px; }
+.used-bid-tag { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 20px; font-size: 11px; font-weight: 700; background: var(--neu); color: var(--text2); border: 1px solid var(--border); border-radius: 4px; }
 .farms{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin-bottom:0.65rem;}
 .farm{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.75rem;}
 .farm-hd{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
