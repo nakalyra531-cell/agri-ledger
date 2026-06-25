@@ -110,7 +110,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .hcard.sel{background:var(--g2);color:#fff;border-color:var(--g1);transform:translateY(-3px);box-shadow:0 4px 8px rgba(0,0,0,0.15);}
 .conf-btn{padding:9px 22px;background:var(--g2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
 .conf-btn:disabled{opacity:.4;cursor:not-allowed;}
-
+.prev-bids-box{margin-bottom:12px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:10px;}
+.prev-bids-title{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:8px;}
+.prev-bid-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;}
+.prev-bid-num{font-size:18px;font-weight:700;color:var(--g1);}
 /* ── REVEAL ── */
 .bids-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:0.5rem;}
 .bid-res{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;background:var(--bg2);font-size:13px;}
@@ -205,6 +208,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   <div class="bid-box">
     <div class="bid-who" id="bid-who"></div>
     <div class="bid-sub">投資カードを1枚選んで提示してください</div>
+    <div id="previous-bids-area"></div>
     <div class="blind-reveal" id="blind-reveal-area" style="display:none">
       <div class="blind-lbl">あなたの初期カード（入札確定後は再び非公開になります）</div>
       <div class="blind-cards" id="blind-cards-display"></div>
@@ -418,7 +422,11 @@ let selBid=null;
 function startBidding(){
   G.order=[];
   for(let i=0;i<G.players.length;i++)G.order.push((G.first+i)%G.players.length);
-  G.bidIdx=0;G.bids={};showPass();
+  G.bidIdx=0;
+  G.bids={};
+  // このターンの公開札
+  G.visibleBids=[];
+  showPass();
 }
 function showPass(){
   const pidx=G.order[G.bidIdx];
@@ -428,6 +436,26 @@ function showBidScreen(){
   const pidx=G.order[G.bidIdx];const p=G.players[pidx];
   document.getElementById('b-turn').textContent=G.turn+' / '+G.max;
   document.getElementById('bid-who').textContent=p.name+' — 手札から1枚選択';
+  const prevArea=document.getElementById('previous-bids-area');
+if(G.visibleBids && G.visibleBids.length){  prevArea.innerHTML=
+  `
+  <div class="prev-bids-box">
+    <div class="prev-bids-title">
+      このターンに既に提出された札
+    </div>
+    ${
+      G.visibleBids.map(b=>`
+        <div class="prev-bid-row">
+          <span>${b.name}</span>
+          <span class="prev-bid-num">${b.bid}</span>
+        </div>
+      `).join('')
+    }
+  </div>
+  `;
+}else{
+  prevArea.innerHTML='';
+}
   renderMkt(G.mkt,'mkt-bid');
   
   const bra=document.getElementById('blind-reveal-area');
@@ -468,7 +496,14 @@ function showBidScreen(){
 function confirmBid(){
   if(selBid===null)return;
   const pidx=G.order[G.bidIdx];
-  G.bids[pidx]=selBid;G.players[pidx].used.push(selBid);G.bidIdx++;
+  G.bids[pidx]=selBid;
+
+G.visibleBids.push({
+  name:G.players[pidx].name,
+  bid:selBid
+});
+
+G.players[pidx].used.push(selBid);G.bidIdx++;
   if(G.bidIdx<G.order.length){showPass();}else{showReveal();}
 }
 
