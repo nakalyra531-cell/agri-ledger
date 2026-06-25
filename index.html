@@ -409,15 +409,27 @@ function showBidScreen(){
   document.getElementById('bid-who').textContent=p.name+' — 手札から1枚選択';
   renderMkt(G.mkt,'mkt-bid');
   
-  const blindCards=p.field.filter(c=>c.blind);
+  // ── 変更箇所：初期カードだけでなく、所有している全カードを表示する ──
   const bra=document.getElementById('blind-reveal-area');
-  if(blindCards.length>0){
+  if(p.field.length>0){
     bra.style.display='block';
-    // ブラインドカードも縮小したリッチカードで表示
-    document.getElementById('blind-cards-display').innerHTML=
-      blindCards.map(c=>`<div style="transform:scale(0.8); transform-origin:top left; height:90px; width:60px; margin-right:5px;">${getRichCardHTML({...c, blind:false})}</div>`).join('');
-  }else{bra.style.display='none';}
-  
+    
+    // 見出しのテキストを「すべての所有カード」用に変更
+    const lbl = document.querySelector('.blind-lbl');
+    if(lbl) lbl.textContent = 'あなたの現在の所有カード（「非公開」は他プレイヤーに見えません）';
+    
+    // 全カードをループして表示。初期カード(blind:true)には黒いバッジをつける
+    document.getElementById('blind-cards-display').innerHTML = p.field.map(c=>{
+      const badge = c.blind ? `<div style="position:absolute; top:-5px; right:-5px; background:#333; color:#fff; font-size:10px; padding:2px 4px; border-radius:4px; font-weight:bold; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.2);">非公開</div>` : '';
+      return `<div style="position:relative; transform:scale(0.8); transform-origin:top left; height:90px; width:60px; margin-right:5px;">
+        ${badge}
+        ${getRichCardHTML({...c, blind:false})}
+      </div>`;
+    }).join('');
+  }else{
+    bra.style.display='none';
+  }
+   
   const hand=document.getElementById('hand-display');
   hand.innerHTML='';selBid=null;document.getElementById('conf-btn').disabled=true;
   p.hand.forEach(v=>{
