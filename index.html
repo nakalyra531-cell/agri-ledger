@@ -51,12 +51,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .prog-fill{height:100%;background:var(--g2);border-radius:3px;transition:width .4s;}
 .sec{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.85rem 1rem;margin-bottom:0.65rem;}
 .sec-lbl{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:0.4px;margin-bottom:0.55rem;text-transform:uppercase;}
-.mkt-row{display:flex;gap:8px;}
-.mkt-card{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:0.7rem 0.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.mkt-icon{font-size:24px;line-height:1;}
-.mkt-name{font-size:11px;font-weight:600;color:var(--text2);}
-.sp-badge{font-size:9px;padding:2px 7px;border-radius:10px;background:var(--c2);color:var(--c1);font-weight:600;}
-.mkt-pts{font-size:10px;color:var(--text2);}
+
+/* ── リッチなカードデザイン追加 ── */
+.mkt-row{display:flex;gap:12px;justify-content:center;padding:10px 0;}
+.card-rich {
+  background: #fff; border: 2px solid var(--border); border-radius: 8px;
+  padding: 8px 4px; width: 80px; height: 115px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; justify-content: space-between; align-items:center;
+  position: relative; flex-shrink: 0; background-color: #fff;
+}
+.card-back-bg {
+  background: repeating-linear-gradient(45deg, var(--g1), var(--g1) 10px, var(--g2) 10px, var(--g2) 20px);
+  border: 2px solid #fff; width:100%; height:100%; border-radius: 5px;
+}
+.card-icon { font-size: 32px; line-height: 1; margin-top: 4px; }
+.card-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.1; color:var(--text); }
+.card-lbl { font-size: 10px; font-weight:600; color:var(--text2); text-align:center; margin-bottom:2px; }
+
+/* ── 3Dフリップアニメーション ── */
+.flip-container { perspective: 1000px; width: 80px; height: 115px; }
+.flipper { width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; position: relative; }
+.flipped .flipper { transform: rotateY(180deg); }
+.card-face, .card-back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px; }
+.card-face { transform: rotateY(180deg); } /* オモテ面 */
+.card-back { } /* ウラ面 */
+
 .farms{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin-bottom:0.65rem;}
 .farm{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:0.75rem;}
 .farm-hd{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
@@ -76,14 +96,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .bid-who{font-size:15px;font-weight:600;margin-bottom:3px;}
 .bid-sub{font-size:13px;color:var(--a1);margin-bottom:0.75rem;}
 .blind-reveal{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.9rem;margin-bottom:0.75rem;}
-.blind-lbl{font-size:11px;color:var(--text2);margin-bottom:5px;}
-.blind-cards{display:flex;gap:6px;flex-wrap:wrap;}
-.blind-tag{font-size:12px;padding:3px 9px;border-radius:5px;background:var(--g4);color:var(--g1);font-weight:600;}
+.blind-lbl{font-size:11px;color:var(--text2);margin-bottom:10px;}
+.blind-cards{display:flex;gap:12px;flex-wrap:wrap;}
 .hand-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem;}
 .hcard{width:42px;height:54px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);cursor:pointer;font-size:18px;font-weight:600;color:var(--g1);display:flex;align-items:center;justify-content:center;transition:all .12s;}
 .hcard:hover{background:var(--g4);border-color:var(--g2);transform:translateY(-2px);}
 .hcard.used{opacity:.25;pointer-events:none;}
-.hcard.sel{background:var(--g2);color:#fff;border-color:var(--g1);transform:translateY(-3px);}
+.hcard.sel{background:var(--g2);color:#fff;border-color:var(--g1);transform:translateY(-3px);box-shadow:0 4px 8px rgba(0,0,0,0.15);}
 .conf-btn{padding:9px 22px;background:var(--g2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
 .conf-btn:disabled{opacity:.4;cursor:not-allowed;}
 
@@ -96,7 +115,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .nxt-btn{width:100%;padding:11px;background:var(--g2);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:0.75rem;}
 .nxt-btn:hover{background:var(--g1);}
 
-/* ── SPECIAL ── */
+/* ── SPECIAL & CUT-IN ── */
 .sp-modal-bg{background:rgba(0,0,0,0.4);border-radius:16px;padding:2rem 1rem;display:flex;align-items:center;justify-content:center;min-height:280px;margin-bottom:0.65rem;}
 .sp-modal{background:var(--bg);border-radius:16px;padding:1.5rem;border:1px solid var(--border);max-width:380px;width:100%;}
 .sp-title{font-size:16px;font-weight:600;margin-bottom:5px;}
@@ -105,6 +124,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 .tgt-btn{padding:9px 13px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);cursor:pointer;font-size:13px;text-align:left;color:var(--text);}
 .tgt-btn:hover{background:var(--g4);border-color:var(--g2);}
 .skip-btn{margin-top:9px;width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text2);cursor:pointer;font-size:13px;}
+
+#cut-in { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+#cut-in.show { opacity: 1; pointer-events: auto; }
+.cut-in-text { font-size: 2.2rem; color: #FFD700; font-weight: 800; text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px #000; transform: scale(0.5) translateX(-100px) skewX(-15deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align:center; }
+#cut-in.show .cut-in-text { transform: scale(1) translateX(0) skewX(-15deg); }
 
 /* ── RESULT ── */
 .res-wrap{padding:0.5rem 0;}
@@ -120,9 +144,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
 </style>
 </head>
 <body>
+<div id="cut-in">
+  <div class="cut-in-text" id="cut-in-msg"></div>
+</div>
+
 <div class="container">
 
-<!-- SETUP -->
 <div id="ss" class="screen active">
   <div class="s-title">🌾 アグリ・レジャー</div>
   <div class="s-sub">Agri-Ledger — 農業国際貿易カードゲーム</div>
@@ -146,7 +173,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   <button class="go-btn" onclick="startGame()">ゲーム開始 →</button>
 </div>
 
-<!-- PASS -->
 <div id="sp" class="screen">
   <div class="pass-box">
     <div class="pass-nm" id="pass-nm"></div>
@@ -155,7 +181,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   </div>
 </div>
 
-<!-- GAME -->
 <div id="sg" class="screen">
   <div class="g-header">
     <div><div class="g-turn-lbl">ターン</div><div class="g-turnnum" id="g-turn"></div></div>
@@ -167,7 +192,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   <button class="bid-start-btn" onclick="startBidding()">競りを開始する ⚖️</button>
 </div>
 
-<!-- BID -->
 <div id="sb" class="screen">
   <div class="g-header">
     <div><div class="g-turn-lbl">ターン</div><div class="g-turnnum" id="b-turn"></div></div>
@@ -185,7 +209,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   </div>
 </div>
 
-<!-- REVEAL -->
 <div id="sr" class="screen">
   <div class="sec"><div class="sec-lbl">今ターンの市場</div><div class="mkt-row" id="mkt-rev"></div></div>
   <div class="sec">
@@ -196,13 +219,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   </div>
 </div>
 
-<!-- SPECIAL -->
 <div id="ssp" class="screen">
   <div class="sec"><div class="sec-lbl">特殊アクション発動</div><div class="mkt-row" id="mkt-sp"></div></div>
   <div id="sp-area"></div>
 </div>
 
-<!-- RESULT -->
 <div id="sres" class="screen">
   <div class="res-wrap">
     <div class="res-title">🏆 ゲーム終了！最終結果</div>
@@ -211,18 +232,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   </div>
 </div>
 
-</div><!-- /container -->
-
-<script>
+</div><script>
 const CLR=[['#27500A','#EAF3DE'],['#633806','#FAEEDA'],['#0F6E56','#E1F5EE'],['#993C1D','#FAECE7'],['#533AB7','#EEEDFE']];
 const NATIONS=['日本','アメリカ','ブラジル','EU','中国'];
 
 const CROPS=[
-  {id:'grain',  name:'大衆穀物',  icon:'🌾', pts:[3,4,6],   lbl:'+3/+4/+6',   cnt:5},
-  {id:'cash',   name:'商品作物',  icon:'☕', pts:[5,2,-15], lbl:'+5/+2/−15',  cnt:5},
-  {id:'brand',  name:'希少作物',  icon:'🍇', pts:[0,0,15],  lbl:'0/0/+15',    cnt:5},
-  {id:'dairy',  name:'畜産・酪農',icon:'🐄', pts:[-2,-5,8], lbl:'−2/−5/+8',  cnt:5},
-  {id:'orchard',name:'果樹園・果物',icon:'🍎',pts:[-3,6,-3], lbl:'−3/+6/−3',  cnt:5},
+  {id:'grain',  name:'大衆穀物',  icon:'🌾', pts:[3,4,6],   lbl:'+3 / +4 / +6',   cnt:5},
+  {id:'cash',   name:'商品作物',  icon:'☕', pts:[5,2,-15], lbl:'+5 / +2 / −15',  cnt:5},
+  {id:'brand',  name:'希少作物',  icon:'🍇', pts:[0,0,15],  lbl:'0 / 0 / +15',    cnt:5},
+  {id:'dairy',  name:'畜産・酪農',icon:'🐄', pts:[-2,-5,8], lbl:'−2 / −5 / +8',  cnt:5},
+  {id:'orchard',name:'果樹園・果物',icon:'🍎',pts:[-3,6,-3], lbl:'−3 / +6 / −3',  cnt:5},
 ];
 const SPECIALS=[
   {id:'buyout', name:'農地買収', icon:'🤝', cnt:2},
@@ -258,15 +277,36 @@ function makeFullDeck(){
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-function renderMkt(cards,cid){
+/* ── リッチカード生成と3Dフリップ描写 ── */
+function getRichCardHTML(c) {
+  if(!c) return '';
+  const m = meta(c.typeId);
+  const bdr = c.isSpecial ? 'var(--c1)' : 'var(--border)';
+  const bg = c.isSpecial ? 'var(--c2)' : '#fff';
+  return `<div class="card-rich" style="border-color:${bdr}; background:${bg}">
+    <div class="card-icon">${m.icon}</div>
+    <div class="card-name">${m.name}</div>
+    <div class="card-lbl">${c.isSpecial ? '即時発動' : m.lbl}</div>
+  </div>`;
+}
+
+function renderMkt(cards, cid, animateFlip=false){
   const el=document.getElementById(cid);el.innerHTML='';
-  cards.forEach(c=>{
-    const m=meta(c.typeId);
-    const div=document.createElement('div');div.className='mkt-card';
-    div.innerHTML=c.isSpecial
-      ?`<div class="mkt-icon">${m.icon}</div><div class="mkt-name">${m.name}</div><div class="sp-badge">特殊</div>`
-      :`<div class="mkt-icon">${m.icon}</div><div class="mkt-name">${m.name}</div><div class="mkt-pts">${m.lbl}</div>`;
+  cards.forEach((c,i)=>{
+    const faceHTML = getRichCardHTML(c);
+    const backHTML = `<div class="card-rich"><div class="card-back-bg"></div></div>`;
+
+    const div=document.createElement('div');div.className='flip-container';
+    // animateFlipが不要な画面（入札や結果画面）では最初から表向き
+    if(!animateFlip) div.classList.add('flipped'); 
+    div.id=`mkt-${cid}-${i}`;
+    div.innerHTML=`<div class="flipper"><div class="card-back">${backHTML}</div><div class="card-face">${faceHTML}</div></div>`;
     el.appendChild(div);
+
+    // ターン開始時のみ、少し時間差をつけて「クルッ」と裏返る
+    if(animateFlip){
+      setTimeout(()=>div.classList.add('flipped'), 300 + (i*250));
+    }
   });
 }
 
@@ -288,6 +328,17 @@ function renderFarms(){
     <div class="farm-crops">${crops}</div>`;
     el.appendChild(div);
   });
+}
+
+/* ── カットイン演出 ── */
+function showCutIn(msg, callback){
+  const bg = document.getElementById('cut-in');
+  document.getElementById('cut-in-msg').textContent = msg + ' 発動！';
+  bg.classList.add('show');
+  setTimeout(()=>{
+    bg.classList.remove('show');
+    if(callback) setTimeout(callback, 300);
+  }, 1500);
 }
 
 /* SETUP */
@@ -335,7 +386,10 @@ function renderTurn(){
   document.getElementById('g-first').textContent=G.players[G.first].name;
   G.mkt=[];
   for(let i=0;i<2;i++){if(G.deck.length)G.mkt.push(G.deck.pop());}
-  renderMkt(G.mkt,'mkt-main');renderFarms();show('sg');
+  // 第3引数をtrueにして、ターン開始時にカードをフリップ（裏返る）させる
+  renderMkt(G.mkt,'mkt-main', true); 
+  renderFarms();
+  show('sg');
 }
 
 /* BIDDING */
@@ -354,13 +408,16 @@ function showBidScreen(){
   document.getElementById('b-turn').textContent=G.turn+' / '+G.max;
   document.getElementById('bid-who').textContent=p.name+' — 手札から1枚選択';
   renderMkt(G.mkt,'mkt-bid');
+  
   const blindCards=p.field.filter(c=>c.blind);
   const bra=document.getElementById('blind-reveal-area');
   if(blindCards.length>0){
     bra.style.display='block';
+    // ブラインドカードも縮小したリッチカードで表示
     document.getElementById('blind-cards-display').innerHTML=
-      blindCards.map(c=>{const m=meta(c.typeId);return`<span class="blind-tag">${m.icon} ${m.name}</span>`;}).join('');
+      blindCards.map(c=>`<div style="transform:scale(0.8); transform-origin:top left; height:90px; width:60px; margin-right:5px;">${getRichCardHTML({...c, blind:false})}</div>`).join('');
   }else{bra.style.display='none';}
+  
   const hand=document.getElementById('hand-display');
   hand.innerHTML='';selBid=null;document.getElementById('conf-btn').disabled=true;
   p.hand.forEach(v=>{
@@ -415,9 +472,27 @@ function resolveWinner(){
 /* SPECIALS */
 function nextSpecial(){
   if(G.spIdx>=G.pendSp.length){afterResolve();return;}
-  const card=G.pendSp[G.spIdx];const w=G.spWin;
+  const card=G.pendSp[G.spIdx];
+  const m=meta(card.typeId);
+
+  // カットインが未再生なら、まずカットインを呼び出す
+  if(!card._cutinDone){
+    card._cutinDone = true;
+    showCutIn(m.icon + " " + m.name, () => {
+      renderSpecialModal(card);
+    });
+    return;
+  }
+  
+  // カットイン再生後に操作UIを表示
+  renderSpecialModal(card);
+}
+
+function renderSpecialModal(card) {
+  const w=G.spWin;
   const area=document.getElementById('sp-area');
   renderMkt(G.mkt,'mkt-sp');
+  
   if(card.typeId==='buyout'){
     const tgts=[];
     G.players.forEach((p,i)=>{if(i!==w)p.field.forEach(c=>tgts.push({pi:i,card:c}));});
@@ -463,6 +538,7 @@ function nextSpecial(){
     area.innerHTML=h;show('ssp');
   }
 }
+
 function doBuyout(fromPi,cardId){
   const w=G.spWin;const f=G.players[fromPi].field;
   const ci=f.findIndex(c=>c.id===cardId);
