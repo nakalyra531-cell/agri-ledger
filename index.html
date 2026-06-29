@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;background:#F5F3EE;color:#1a1a1a;min-height:100vh;}
-.container{max-width:600px;margin:0 auto;padding:1rem;}
+.container{max-width:600px;flex:1;padding:1rem;}
 .screen{display:none;}.screen.active{display:block;}
 
 /* ── カラー変数 ── */
@@ -18,7 +18,89 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   --neu:#F1EFE8;--border:#E0DDD6;--bg:#fff;--bg2:#F8F6F1;
   --text:#1a1a1a;--text2:#6b6966;
 }
+/* ── レイアウト（サイドパネル用） ── */
+.app-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.side-panel {
+  display: none; /* デフォルト（スマホ）は非表示 */
+  width: 280px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  padding: 1rem;
+  overflow-y: auto;
+}
+/* 画面幅が1100px以上の場合にサイドパネルを表示 */
+@media (min-width: 1100px) {
+  .side-panel { display: block; }
+}
+.panel-inner {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--g1);
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 2px solid var(--g4);
+  padding-bottom: 0.5rem;
+}
+.rule-section, .ref-section { margin-bottom: 1.25rem; }
+.rule-section:last-child, .ref-section:last-child { margin-bottom: 0; }
+.rule-h, .ref-h {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 0.5rem;
+  background: var(--neu);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.rule-section p, .rule-list li {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 0.25rem;
+}
+.rule-list { padding-left: 1.2rem; margin-bottom: 0.5rem; }
 
+/* 早見表テーブル */
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.ref-table th, .ref-table td {
+  border: 1px solid var(--border);
+  padding: 5px 2px;
+  text-align: center;
+  word-break: keep-all;
+}
+.ref-table th {
+  background: var(--g4);
+  color: var(--g1);
+  font-weight: 700;
+}
+.ref-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  padding-left: 4px;
+}
+.ref-icon { margin-right: 4px; font-size: 12px; }
+.ref-table .pos { color: var(--g1); font-weight: 700; background: var(--g4); }
+.ref-table .neg { color: var(--c1); font-weight: 700; background: var(--c2); }
+.ref-table .zero { color: var(--text2); background: var(--neu); }
 /* ── SETUP ── */
 .s-title{font-size:26px;font-weight:600;color:var(--g1);text-align:center;padding:1.5rem 0 0.25rem;}
 .s-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1.25rem;}
@@ -155,8 +237,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sa
   <div class="cut-in-text" id="cut-in-msg"></div>
 </div>
 
-<div class="container">
+<div class="app-wrapper">
 
+  <!-- ────────────────── 左パネル：ルール ────────────────── -->
+  <aside class="side-panel left-panel">
+    <div class="panel-inner">
+      <h2 class="panel-title">📖 ゲームルール</h2>
+      
+      <div class="rule-section">
+        <div class="rule-h">勝利条件</div>
+        <p>全10ターン終了時に、獲得した作物の「農業ポイント（AP）」合計が最も高いプレイヤーの勝利。</p>
+      </div>
+
+      <div class="rule-section">
+        <div class="rule-h">ターンの流れ</div>
+        <ol class="rule-list">
+          <li>市場に2枚の作物カードが公開される。</li>
+          <li>全員が手札（投資カード: 1〜10）を1枚ずつ秘密裏に提示。</li>
+          <li>最高値を出した人が2枚を総取り。使った札は戻らない。</li>
+        </ol>
+      </div>
+
+      <div class="rule-section">
+        <div class="rule-h">初期カード（非公開）</div>
+        <p>最初に配られる2枚の作物はブラインド（非公開）です。自分の入札画面でのみ確認でき、他プレイヤーには終了時まで見えません。</p>
+      </div>
+
+      <div class="rule-section">
+        <div class="rule-h">特殊アクション（獲得時即時発動）</div>
+        <ul class="rule-list">
+          <li><strong>🤝 農地買収:</strong> 相手の畑から作物を1枚指定して奪い、自分の畑に加える（裏向きの初期カードも強奪可能）。</li>
+          <li><strong>🚢 市場隔離:</strong> 自分または相手の畑にある作物を1枚選び、ゲームから廃棄する。</li>
+          <li><strong>🚜 ダンピング:</strong> 自分の畑にある作物を1枚、任意の相手に押し付ける。</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+  <!-- ────────────────── メインコンテナ ────────────────── -->
+<div class="container">
+<!-- ────────────────── 右パネル：早見表 ────────────────── -->
+  <aside class="side-panel right-panel">
+    <div class="panel-inner">
+      <h2 class="panel-title">📊 農政サマリーシート</h2>
+      
+      <div class="ref-section">
+        <div class="ref-h">作物カードの得点 (AP) 各5枚</div>
+        <table class="ref-table">
+          <tr><th>作物</th><th>1枚</th><th>2枚</th><th>3枚+</th></tr>
+          <tr><td><span class="ref-icon">🌾</span>大衆穀物</td><td class="pos">+3</td><td class="pos">+4</td><td class="pos">+6</td></tr>
+          <tr><td><span class="ref-icon">☕</span>商品作物</td><td class="pos">+5</td><td class="pos">+2</td><td class="neg">-15</td></tr>
+          <tr><td><span class="ref-icon">🍇</span>希少作物</td><td class="zero">0</td><td class="zero">0</td><td class="pos">+15</td></tr>
+          <tr><td><span class="ref-icon">🐄</span>畜産･酪農</td><td class="neg">-2</td><td class="neg">-5</td><td class="pos">+8</td></tr>
+          <tr><td><span class="ref-icon">🍎</span>果樹園</td><td class="neg">-3</td><td class="pos">+6</td><td class="neg">-3</td></tr>
+        </table>
+      </div>
+
+      <div class="ref-section" style="margin-top: 15px;">
+        <div class="ref-h">各作物の特徴と戦略</div>
+        <p style="font-size: 11px; line-height: 1.5; color: var(--text2);">
+          <strong>🌾大衆穀物:</strong><br>枚数が増えるほど順当に点が伸びる手堅い安定枠。<br><br>
+          <strong>☕商品作物:</strong><br>1枚で高得点だが、3枚以上集めると連作障害で一気に大赤字(-15点)になる。<br><br>
+          <strong>🍇希少作物（ブランド）:</strong><br>1〜2枚では無価値だが、3枚集めると産地ブランドが確立し一発逆転の+15点。<br><br>
+          <strong>🐄畜産･酪農:</strong><br>初期は赤字だが、規模化（3枚）で黒字転換する。<br><br>
+          <strong>🍎果樹園･果物:</strong><br>2枚の時のみ高得点。過剰も過少もダメな精密制御が求められる。
+        </p>
+      </div>
+
+    </div>
+  </aside>
+</div><!-- /app-wrapper -->
 <div id="ss" class="screen active">
   <div class="s-title">🌾 アグリ・レジャー</div>
   <div class="s-sub">Agri-Ledger — 農業国際貿易カードゲーム</div>
